@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI: solve / verify / detect."""
+"""CLI: solve / verify / detect。"""
 from __future__ import annotations
 
 import argparse
@@ -61,23 +61,23 @@ def cmd_detect(a: argparse.Namespace) -> int:
 
 
 def build() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="local reCAPTCHA v2 audio solver")
+    p = argparse.ArgumentParser(description="reCAPTCHA v2 音声ソルバー")
     sub = p.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("solve", help="open URL, solve, print token")
+    s = sub.add_parser("solve", help="ページを開いて解き、tokenを表示")
     s.add_argument("--url", required=True)
     s.add_argument("--sitekey", default=None)
     s.add_argument("--timeout", type=float, default=120)
     s.add_argument("--retries", type=int, default=2)
     s.add_argument("--rounds", type=int, default=5)
-    s.add_argument("--headed", action="store_true", help="show browser window")
+    s.add_argument("--headed", action="store_true", help="ブラウザを表示する")
     s.add_argument("--out", default=None)
     s.set_defaults(func=cmd_solve)
-    v = sub.add_parser("verify", help="end-to-end check on official demo")
+    v = sub.add_parser("verify", help="公式デモで動作確認")
     v.add_argument("--timeout", type=float, default=120)
     v.add_argument("--retries", type=int, default=3)
     v.add_argument("--headed", action="store_true")
     v.set_defaults(func=cmd_verify)
-    d = sub.add_parser("detect", help="extract sitekey from a page")
+    d = sub.add_parser("detect", help="ページからsitekey抽出")
     d.add_argument("url")
     d.set_defaults(func=cmd_detect)
     return p

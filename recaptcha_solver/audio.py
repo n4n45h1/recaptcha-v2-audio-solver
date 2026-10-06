@@ -1,8 +1,4 @@
-"""Audio helpers: secure download + mp3->wav + STT + normalization.
-
-STT order: Google free API (no key, via ffmpeg-made FLAC so no `flac`
-binary is needed) -> faster-whisper local fallback (optional dep).
-"""
+"""音声まわり: ダウンロード・mp3→wav・STT・正規化。"""
 from __future__ import annotations
 
 import re
@@ -42,7 +38,7 @@ class AudioError(RuntimeError):
 
 
 def validate_audio_url(value: str) -> str:
-    """Allowlist validation for page-controlled audio URLs."""
+    """音声URLの許可リスト検証。"""
     if not isinstance(value, str) or not value:
         raise AudioError("empty audio url")
     if any(ord(c) <= 32 or ord(c) == 127 for c in value) or "\\" in value:
@@ -83,7 +79,7 @@ def normalize_answer(text: str) -> str:
 
 
 def _flac_via_ffmpeg(wav_path: Path) -> bytes:
-    """WAV -> FLAC with ffmpeg (no `flac` binary needed, rootless-friendly)."""
+    """wav→flac変換 (flacバイナリ不要)。"""
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     out = wav_path.with_suffix(".flac")
     cmd = [ffmpeg, "-y", "-i", str(wav_path), "-c:a", "flac",
@@ -155,7 +151,7 @@ def transcribe_wav(wav_path: Path, lang: str = "en-US", timeout: int = 15) -> st
 
 
 def transcribe_mp3_bytes(data: bytes, lang: str = "en-US") -> tuple[str, str]:
-    """MP3 bytes -> (raw transcript, normalized answer). Cleans up tempfiles."""
+    """mp3→(原文, 正規化した回答)。一時ファイルは掃除する。"""
     if len(data) > MAX_AUDIO_BYTES:
         raise AudioError("audio too large")
     if len(data) < 200:
@@ -179,7 +175,7 @@ _WHISPER_MODEL = None
 
 
 def whisper_transcribe(mp3_path: Path, model: str = "base.en") -> str:
-    """Local STT via faster-whisper (av-independent ffmpeg decode)."""
+    """faster-whisperでローカルSTT。"""
     import os as _os
     model = _os.environ.get("WHISPER_MODEL", model)
     global _WHISPER_MODEL

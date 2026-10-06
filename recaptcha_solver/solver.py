@@ -1,9 +1,4 @@
-"""reCAPTCHA v2 checkbox + audio solver (Playwright, sync).
-
-Flow: open page -> click checkbox (human-like mouse) -> if a challenge
-pops up, switch to audio -> download mp3 -> STT -> submit -> read token.
-Each solve launches a fresh browser with a fresh profile.
-"""
+"""reCAPTCHA v2を解く (Playwright)。checkbox→音声認証→token取得。"""
 from __future__ import annotations
 
 import random
@@ -52,7 +47,7 @@ def _bezier(p0, p1, p2, p3, t) -> float:
 
 
 def human_click(page, x: float, y: float) -> None:
-    """Human-like click: bezier path + easing + jitter."""
+    """ベジェ曲線で人間っぽくクリック。"""
     sx, sy = getattr(page, "_mouse_pos",
                       (random.randint(40, 240), random.randint(40, 180)))
     dx, dy = x - sx, y - sy
@@ -75,7 +70,7 @@ def human_click(page, x: float, y: float) -> None:
 
 
 class RecaptchaSolver:
-    """Solve reCAPTCHA v2. One browser per solve (fresh profile each time)."""
+    """1 solveごとに新しいブラウザで解く。"""
 
     DEMO_URL = "https://www.google.com/recaptcha/api2/demo"
     DEMO_SITEKEY = "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
@@ -91,10 +86,8 @@ class RecaptchaSolver:
         self.proxy = proxy
         self._log = on_log or _log
 
-    # ---------- public ----------
-
     def solve(self, url: str, sitekey: Optional[str] = None) -> str:
-        """Open url, solve, return the token string."""
+        """URLを開いて解き、tokenを返す。"""
         from playwright.sync_api import sync_playwright
         profile = Path(tempfile.mkdtemp(prefix="rc-chrome-"))
         try:
@@ -116,14 +109,14 @@ class RecaptchaSolver:
             try:
                 self._log(f"[solve] attempt {i}/{retries}")
                 return self.solve(url, sitekey)
-            except Exception as e:  # noqa: BLE001 - retry with fresh browser
+            except Exception as e:  # noqa: BLE001 - 新ブラウザでリトライ
                 last = f"{type(e).__name__}: {e}"
                 self._log(f"[solve] FAIL {last}")
                 time.sleep(2)
         raise RecaptchaError(f"giving up after {retries}: {last}")
 
     def verify_demo(self) -> tuple[bool, str]:
-        """End-to-end check on Google's official demo. Returns (ok, token)."""
+        """公式デモで動作確認。(ok, token)を返す。"""
         from playwright.sync_api import sync_playwright
         profile = Path(tempfile.mkdtemp(prefix="rc-chrome-"))
         try:
@@ -145,8 +138,6 @@ class RecaptchaSolver:
                     browser.close()
         finally:
             shutil.rmtree(profile, ignore_errors=True)
-
-    # ---------- browser ----------
 
     def _launch(self, pw, profile: Path):
         args = [
@@ -177,8 +168,6 @@ class RecaptchaSolver:
             Stealth().apply_stealth(page)
         except Exception:
             pass
-
-    # ---------- solve flow ----------
 
     def _force_english(self, page) -> None:
         def _rewrite(route):
@@ -303,8 +292,6 @@ class RecaptchaSolver:
         low = body.lower()
         return ("try again later" in low or "automated queries" in low
                 or "your computer or network" in low)
-
-    # ---------- audio round ----------
 
     def _audio_src(self, page) -> Optional[str]:
         b = page.frame_locator(BFRAME_SEL)

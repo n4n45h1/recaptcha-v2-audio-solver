@@ -1,9 +1,9 @@
-"""Library usage example."""
+"""使い方の例。"""
 from recaptcha_solver import RecaptchaSolver
 
 solver = RecaptchaSolver(headless=True, timeout=120)
 
-# Solve a page you are authorized to test and get the token.
+# テスト許可のあるページを解いてtoken取得
 token = solver.solve_with_retries(
     "https://www.google.com/recaptcha/api2/demo",
     "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-",
@@ -11,5 +11,4 @@ token = solver.solve_with_retries(
 )
 print("token len:", len(token))
 
-# Submit it with your form as the `g-recaptcha-response` field
-# within ~2 minutes (tokens expire).
+# g-recaptcha-response として送る。tokenの有効期限は約2分。

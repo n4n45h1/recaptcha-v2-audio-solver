@@ -1,4 +1,4 @@
-"""Offline tests: normalization, URL validation, imports (no browser needed)."""
+"""オフラインテスト (ブラウザ不要)。"""
 import unittest
 
 from recaptcha_solver import (

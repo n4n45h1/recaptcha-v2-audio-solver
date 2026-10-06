@@ -1,11 +1,4 @@
-"""HTTP API + Web UI.
-
-GET /solve?type=recaptcha&url=<site>&sitekey=<key>[&timeout=60]
-GET /health  GET /stats  GET /  (dashboard)
-
-Concurrency: semaphore + one browser per solve (thread pool).
-Tokens are returned in responses but never logged server-side.
-"""
+"""HTTP API + Web UI。tokenはログに出さない。"""
 from __future__ import annotations
 
 import os
@@ -34,10 +27,10 @@ INDEX_HTML = """<!doctype html><meta charset=utf-8><title>reCAPTCHA v2 audio sol
 input,select{width:100%;padding:8px;margin:6px 0}button{padding:10px 24px}
 pre{background:#111;color:#0f0;padding:12px;white-space:pre-wrap}</style>
 <h1>reCAPTCHA v2 audio solver</h1>
-<p>Local only. Solves the audio challenge with free speech recognition.</p>
+<p>ローカル専用。音声認証を無料の音声認識で解きます。</p>
 <label>URL<input id=url placeholder="https://..."></label>
 <label>sitekey<input id=key placeholder="6Le..."></label>
-<label>timeout (s)<input id=to value=120></label>
+<label>timeout (秒)<input id=to value=120></label>
 <button onclick="run()">RUN</button>
 <pre id=out>-</pre>
 <script>async function run(){
