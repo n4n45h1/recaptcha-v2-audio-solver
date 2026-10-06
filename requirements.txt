@@ -1,0 +1,8 @@
+SpeechRecognition>=3.10
+imageio-ffmpeg>=0.4
+playwright>=1.40
+playwright-stealth>=2.0
+Flask>=3.0
+requests>=2.31
+# optional: local speech recognition fallback (no Google API)
+# faster-whisper>=1.0

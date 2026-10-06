@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.mp3
+*.wav
+*.flac
+token.txt
+last_fail.*
